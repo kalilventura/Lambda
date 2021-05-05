@@ -1,0 +1,44 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  S3Operations
+
+  Sample SAM Template for S3Operations
+
+# Accept Binary Media Types in API
+Globals:
+  Api:
+    BinaryMediaTypes:
+      - "*~1*"
+  Function:
+    Runtime: python3.8
+    Timeout: 30
+
+Resources:
+  S3OperationsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: s3_operations/
+      Handler: app.lambda_handler
+      Events:
+        UploadArchive:
+          Type: Api
+          Properties:
+            Path: /files/upload
+            Method: post
+        GetArchive:
+          Type: Api
+          Properties:
+            Path: /files/download/{filename}
+            Method: get
+
+Outputs:
+  S3OperationsApi:
+    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/files/"
+  S3OperationsFunction:
+    Description: "Hello World Lambda Function ARN"
+    Value: !GetAtt HelloWorldFunction.Arn
+  S3OperationsFunctionIamRole:
+    Description: "Implicit IAM Role created for Hello World function"
+    Value: !GetAtt S3OperationsFunctionRole.Arn
