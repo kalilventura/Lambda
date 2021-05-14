@@ -6,15 +6,11 @@ from botocore.exceptions import ClientError
 
 def lambda_handler(event, context):
     try:
-        if event['httpMethod'] == 'POST':
-            item: dict = json.loads(event['body'])
-            response_data = put_data(item)
-            return response(None, 200, response_data)
+        response_data = put_data(event)
+        print(response_data)
+        return response(None, 200, response_data)
     except Exception as e:
-        error = {
-            'error': e
-        }
-        response(error, 500)
+        raise e
 
 
 def put_data(item):
@@ -23,9 +19,9 @@ def put_data(item):
         item = {
             'Id': int(item['id']),
             'Image': item['filename'],
-            'User': {
-                'Name': item['user']['name'],
-                'Company': item['user']['company']
+            'Data': {
+                'CreatedAt': item['createdAt'],
+                'Message': item['message']
             }
         }
         input_data = table.put_item(Item=item)
